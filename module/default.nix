@@ -125,15 +125,15 @@ with lib; let
       ${jq} \
         --null-input \
         --compact-output \
-        --argfile old "$oldGenFile" \
+        --slurpfile old "$oldGenFile" \
         ${
       if isActivation
       then ''
-        --argfile new "$newGenFile" \
-        '$old - $new | .[]' |
+        --slurpfile new "$newGenFile" \
+        '$old[0] - $new[0] | .[]' |
       ''
       else ''
-        '$old | .[]' |
+        '$old[0] | .[]' |
       ''
     }
       # Replace $UID with $(id -u). Don't use eval
