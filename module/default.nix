@@ -8,8 +8,16 @@
 with lib; let
   cfg = config.homeage;
 
-  isDarwin = pkgs.stdenv.isDarwin;
-  mountPath = if isDarwin then "$(getconf DARWIN_USER_TEMP_DIR)" else "$XDG_RUNTIME_DIR/secrets";
+  # isDarwin = pkgs.stdenv.isDarwin;
+  # mountPath = if isDarwin then "$(getconf DARWIN_USER_TEMP_DIR)" else "$XDG_RUNTIME_DIR/secrets";
+
+  mountDir = let
+    inherit (pkgs.stdenv.hostPlatform) isDarwin;
+    baseDir =
+      if isDarwin
+      then "$(getconf DARWIN_USER_TEMP_DIR)"
+      else "$XDG_RUNTIME_DIR";
+    in "${baseDir}";
 
   ageBin = let
     binName = (builtins.parseDrvName cfg.pkg.name).name;
@@ -217,7 +225,7 @@ in {
 
     mount = mkOption {
       description = "Absolute path to folder where decrypted files are stored. Files are decrypted on login. Defaults to /run which is a tmpfs.";
-      default = mountPath;
+      default = mountDir;
       type = types.str;
     };
 
