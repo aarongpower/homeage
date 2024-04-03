@@ -8,6 +8,9 @@
 with lib; let
   cfg = config.homeage;
 
+  isDarwin = pkgs.stdenv.isDarwin;
+  mountPath = if isDarwin then "$(getconf DARWIN_USER_TEMP_DIR)" else "$XDG_RUNTIME_DIR/secrets";
+
   ageBin = let
     binName = (builtins.parseDrvName cfg.pkg.name).name;
   in "${cfg.pkg}/bin/${binName}";
@@ -214,7 +217,7 @@ in {
 
     mount = mkOption {
       description = "Absolute path to folder where decrypted files are stored. Files are decrypted on login. Defaults to /run which is a tmpfs.";
-      default = "/run/user/$UID/secrets";
+      default = mountPath;
       type = types.str;
     };
 
